@@ -93,13 +93,15 @@ const ModifierForm: React.FC<ModifierFormProps> = ({
                   placeholder="Price"
                   className="w-24 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 />
-                <button
-                  type="button"
-                  onClick={() => onRemoveModifierOption(modifierIndex, optionIndex)}
-                  className="text-red-600 hover:text-red-900"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
+                {modifier.options.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => onRemoveModifierOption(modifierIndex, optionIndex)}
+                    className="text-red-600 hover:text-red-900"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                )}
               </div>
             ))}
             <button

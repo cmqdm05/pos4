@@ -1,4 +1,4 @@
-import { api } from '../api';
+import { api } from "../api";
 
 export interface Product {
   _id: string;
@@ -18,7 +18,7 @@ export interface Product {
   }>;
   discounts?: Array<{
     name: string;
-    type: 'percentage' | 'fixed';
+    type: "percentage" | "fixed";
     value: number;
     startDate: string;
     endDate: string;
@@ -35,38 +35,41 @@ export interface CreateProductRequest {
   store: string;
   stock: number;
   image?: string;
-  modifiers?: Product['modifiers'];
-  discounts?: Product['discounts'];
+  modifiers?: Product["modifiers"];
+  discounts?: Product["discounts"];
 }
 
 export const productApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getProducts: builder.query<Product[], string>({
       query: (storeId) => `products/${storeId}`,
-      providesTags: ['Products'],
+      providesTags: ["Products"],
     }),
     createProduct: builder.mutation<Product, CreateProductRequest>({
       query: (productData) => ({
-        url: 'products',
-        method: 'POST',
+        url: "products",
+        method: "POST",
         body: productData,
       }),
-      invalidatesTags: ['Products'],
+      invalidatesTags: ["Products"],
     }),
-    updateProduct: builder.mutation<Product, Partial<Product> & Pick<Product, '_id'>>({
+    updateProduct: builder.mutation<
+      Product,
+      Partial<Product> & Pick<Product, "_id">
+    >({
       query: ({ _id, ...patch }) => ({
         url: `products/${_id}`,
-        method: 'PUT',
+        method: "PUT",
         body: patch,
       }),
-      invalidatesTags: ['Products'],
+      invalidatesTags: ["Products"],
     }),
     deleteProduct: builder.mutation<void, string>({
       query: (id) => ({
         url: `products/${id}`,
-        method: 'DELETE',
+        method: "DELETE",
       }),
-      invalidatesTags: ['Products'],
+      invalidatesTags: ["Products", "Categories", "Inventory"],
     }),
   }),
 });

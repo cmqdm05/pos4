@@ -40,7 +40,10 @@ const ProductForm: React.FC<ProductFormProps> = ({
     handleSubmit,
     formState: { errors },
   } = useForm({
-    defaultValues: initialData,
+    defaultValues: {
+      ...initialData,
+      category: initialData?.category?._id || initialData?.category,
+    },
   });
 
   return (
