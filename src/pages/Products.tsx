@@ -35,7 +35,10 @@ const Products = () => {
 
   const handleAddModifierOption = (modifierIndex: number) => {
     const newModifiers = [...modifiers];
-    newModifiers[modifierIndex].options.push({ name: '', price: 0 });
+    newModifiers[modifierIndex] = {
+      ...newModifiers[modifierIndex],
+      options: [...newModifiers[modifierIndex].options, { name: '', price: 0 }]
+    };
     setModifiers(newModifiers);
   };
 
@@ -52,9 +55,14 @@ const Products = () => {
     value: string | number
   ) => {
     const newModifiers = [...modifiers];
-    newModifiers[modifierIndex].options[optionIndex] = {
-      ...newModifiers[modifierIndex].options[optionIndex],
+    const newOptions = [...newModifiers[modifierIndex].options];
+    newOptions[optionIndex] = {
+      ...newOptions[optionIndex],
       [field]: field === 'price' ? Number(value) : value,
+    };
+    newModifiers[modifierIndex] = {
+      ...newModifiers[modifierIndex],
+      options: newOptions,
     };
     setModifiers(newModifiers);
   };
@@ -65,9 +73,12 @@ const Products = () => {
 
   const handleRemoveModifierOption = (modifierIndex: number, optionIndex: number) => {
     const newModifiers = [...modifiers];
-    newModifiers[modifierIndex].options = newModifiers[modifierIndex].options.filter(
-      (_: any, index: number) => index !== optionIndex
-    );
+    newModifiers[modifierIndex] = {
+      ...newModifiers[modifierIndex],
+      options: newModifiers[modifierIndex].options.filter(
+        (_: any, index: number) => index !== optionIndex
+      ),
+    };
     setModifiers(newModifiers);
   };
 
@@ -76,7 +87,13 @@ const Products = () => {
       const productData = {
         ...data,
         store: storeId,
-        modifiers,
+        modifiers: modifiers.map(modifier => ({
+          ...modifier,
+          options: modifier.options.map((option: any) => ({
+            ...option,
+            price: Number(option.price)
+          }))
+        })),
         price: Number(data.price),
         stock: Number(data.stock)
       };

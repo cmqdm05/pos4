@@ -88,23 +88,36 @@ const Sales = () => {
     setCart(
       cart.map((item, index) => {
         if (index === itemIndex) {
-          const existingModifier = item.selectedModifiers.find(
+          const existingModifierIndex = item.selectedModifiers.findIndex(
             (m) => m.name === modifier.name
           );
-          if (existingModifier) {
-            return {
-              ...item,
-              selectedModifiers: item.selectedModifiers.map((m) =>
-                m.name === modifier.name ? { name: modifier.name, option } : m
-              ),
-            };
+
+          let newSelectedModifiers = [...item.selectedModifiers];
+
+          if (existingModifierIndex !== -1) {
+            // If the exact same option is selected, remove it (unselect)
+            if (item.selectedModifiers[existingModifierIndex].option.name === option.name) {
+              newSelectedModifiers = newSelectedModifiers.filter(
+                (m) => m.name !== modifier.name
+              );
+            } else {
+              // Replace the existing option with the new one
+              newSelectedModifiers[existingModifierIndex] = {
+                name: modifier.name,
+                option,
+              };
+            }
+          } else {
+            // Add new modifier option
+            newSelectedModifiers.push({
+              name: modifier.name,
+              option,
+            });
           }
+
           return {
             ...item,
-            selectedModifiers: [
-              ...item.selectedModifiers,
-              { name: modifier.name, option },
-            ],
+            selectedModifiers: newSelectedModifiers,
           };
         }
         return item;

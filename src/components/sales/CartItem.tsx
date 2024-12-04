@@ -28,6 +28,18 @@ const CartItem = ({
     onDiscountToggle(index, discount);
   };
 
+  const isModifierSelected = (modifier: any, option: any) => {
+    return item.selectedModifiers.some(
+      (m) => m.name === modifier.name && m.option.name === option.name
+    );
+  };
+
+  const handleModifierToggle = (modifier: any, option: any) => {
+    // If already selected, this will unselect it
+    // If not selected, this will select it and replace any other option from the same modifier group
+    onModifierToggle(index, modifier, option);
+  };
+
   return (
     <div className="bg-gray-50 rounded-lg p-4">
       <div className="flex justify-between items-start">
@@ -78,15 +90,11 @@ const CartItem = ({
                 {modifier.options.map((option: any) => (
                   <button
                     key={option.name}
-                    onClick={() => onModifierToggle(index, modifier, option)}
-                    className={`text-xs px-2 py-1 rounded ${
-                      item.selectedModifiers.some(
-                        (m) =>
-                          m.name === modifier.name &&
-                          m.option.name === option.name
-                      )
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-gray-200'
+                    onClick={() => handleModifierToggle(modifier, option)}
+                    className={`text-xs px-2 py-1 rounded transition-colors ${
+                      isModifierSelected(modifier, option)
+                        ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+                        : 'bg-gray-200 hover:bg-gray-300'
                     }`}
                   >
                     {option.name} (+${option.price.toFixed(2)})

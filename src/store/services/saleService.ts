@@ -9,7 +9,7 @@ export interface Sale {
       _id: string;
       name: string;
       price: number;
-    };
+    } | null;
     quantity: number;
     modifiers: Array<{
       name: string;

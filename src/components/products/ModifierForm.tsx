@@ -87,7 +87,7 @@ const ModifierForm: React.FC<ModifierFormProps> = ({
                       modifierIndex,
                       optionIndex,
                       'price',
-                      e.target.value
+                      parseFloat(e.target.value) || 0
                     )
                   }
                   placeholder="Price"

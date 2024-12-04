@@ -9,6 +9,11 @@ interface SalesHistoryProps {
 }
 
 const SalesHistory = ({ sales, onClose }: SalesHistoryProps) => {
+  const formatProductInfo = (item: any) => {
+    if (!item.product) return 'Product not found';
+    return `${item.product.name || 'Unnamed Product'} x${item.quantity}`;
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
       <div className="bg-white rounded-lg p-6 max-w-4xl w-full max-h-[90vh] flex flex-col">
@@ -47,17 +52,15 @@ const SalesHistory = ({ sales, onClose }: SalesHistoryProps) => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {sales.map((sale) => (
+              {sales?.map((sale) => (
                 <tr key={sale._id}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {format(new Date(sale.createdAt), 'MMM dd, yyyy HH:mm')}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-900">
                     <ul className="list-disc list-inside">
-                      {sale.items.map((item, index) => (
-                        <li key={index}>
-                          {item.product.name} x{item.quantity}
-                        </li>
+                      {sale.items?.map((item, index) => (
+                        <li key={index}>{formatProductInfo(item)}</li>
                       ))}
                     </ul>
                   </td>
