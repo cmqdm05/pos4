@@ -34,13 +34,10 @@ export const storeApi = api.injectEndpoints({
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
       },
-      keepUnusedDataFor: 0, // Don't keep data in cache
-      forceRefetch: () => true, // Always refetch
     }),
     getStore: builder.query<Store, string>({
       query: (id) => `stores/${id}`,
       providesTags: (result, error, id) => [{ type: 'Stores', id }],
-      keepUnusedDataFor: 0, // Don't keep data in cache
     }),
     updateStore: builder.mutation<Store, Partial<Store> & Pick<Store, '_id'>>({
       query: ({ _id, ...patch }) => ({

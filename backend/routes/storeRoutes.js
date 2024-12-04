@@ -23,8 +23,15 @@ router.post('/', protect, async (req, res) => {
 // Get user's stores
 router.get('/', protect, async (req, res) => {
   try {
-    const stores = await Store.find({ owner: req.user._id });
-    res.json(stores);
+    // If staff, return only their assigned store
+    if (req.user.store) {
+      const store = await Store.findById(req.user.store);
+      res.json([store]);
+    } else {
+      // If regular user, return all their stores
+      const stores = await Store.find({ owner: req.user._id });
+      res.json(stores);
+    }
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -33,15 +40,26 @@ router.get('/', protect, async (req, res) => {
 // Get store by id
 router.get('/:id', protect, async (req, res) => {
   try {
-    const store = await Store.findOne({
-      _id: req.params.id,
-      owner: req.user._id
-    });
-    if (store) {
-      res.json(store);
-    } else {
-      res.status(404).json({ message: 'Store not found' });
+    const store = await Store.findById(req.params.id);
+    
+    if (!store) {
+      return res.status(404).json({ message: 'Store not found' });
     }
+
+    // Check if user is authorized to access this store
+    if (req.user.store) {
+      // Staff can only access their assigned store
+      if (req.user.store.toString() !== store._id.toString()) {
+        return res.status(403).json({ message: 'Not authorized to access this store' });
+      }
+    } else {
+      // Regular users can only access their owned stores
+      if (store.owner.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ message: 'Not authorized to access this store' });
+      }
+    }
+
+    res.json(store);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -50,21 +68,23 @@ router.get('/:id', protect, async (req, res) => {
 // Update store
 router.put('/:id', protect, async (req, res) => {
   try {
-    const store = await Store.findOne({
-      _id: req.params.id,
-      owner: req.user._id
-    });
-
-    if (store) {
-      store.name = req.body.name || store.name;
-      store.address = req.body.address || store.address;
-      store.phone = req.body.phone || store.phone;
-
-      const updatedStore = await store.save();
-      res.json(updatedStore);
-    } else {
-      res.status(404).json({ message: 'Store not found' });
+    const store = await Store.findById(req.params.id);
+    
+    if (!store) {
+      return res.status(404).json({ message: 'Store not found' });
     }
+
+    // Only store owner can update store
+    if (store.owner.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized to update this store' });
+    }
+
+    store.name = req.body.name || store.name;
+    store.address = req.body.address || store.address;
+    store.phone = req.body.phone || store.phone;
+
+    const updatedStore = await store.save();
+    res.json(updatedStore);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -73,17 +93,19 @@ router.put('/:id', protect, async (req, res) => {
 // Delete store
 router.delete('/:id', protect, async (req, res) => {
   try {
-    const store = await Store.findOne({
-      _id: req.params.id,
-      owner: req.user._id
-    });
-
-    if (store) {
-      await store.remove();
-      res.json({ message: 'Store removed' });
-    } else {
-      res.status(404).json({ message: 'Store not found' });
+    const store = await Store.findById(req.params.id);
+    
+    if (!store) {
+      return res.status(404).json({ message: 'Store not found' });
     }
+
+    // Only store owner can delete store
+    if (store.owner.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized to delete this store' });
+    }
+
+    await store.remove();
+    res.json({ message: 'Store removed' });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

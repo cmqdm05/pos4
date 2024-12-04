@@ -20,12 +20,10 @@ const StaffLogin = () => {
 
   const onSubmit = async (data: LoginForm) => {
     try {
-      const user = await login(data).unwrap();
-      dispatch(setStaffCredentials(user));
+      const response = await login(data).unwrap();
+      dispatch(setStaffCredentials(response));
       toast.success('Login successful!');
-      
-      // Navigate to the store dashboard
-      navigate(`/stores/${user.store}/dashboard`);
+      navigate(`/stores/${response.store}/dashboard`);
     } catch (error) {
       toast.error('Invalid email or password');
     }
